@@ -11,19 +11,64 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var displayLabel: UILabel!
-    
+        
+    private var isFinshedTypingNumber : Bool = true
+        
+    private var displayValue: Double {
+        get{
+            guard let number = Double(displayLabel.text!) else {
+                fatalError("Cannot convert display value to double")
+            }
+            return number
+        }
+        set {
+            displayLabel.text = String(newValue)
+        }
+    }
     
     
     @IBAction func calcButtonPressed(_ sender: UIButton) {
         
         //What should happen when a non-number button is pressed
-    
+        isFinshedTypingNumber = true
+        
+        if let calcMethod = sender.currentTitle {
+            
+            let calculator = CalculatorLogic(number: displayValue)
+            
+            guard let result = calculator.calcualte(symbol: calcMethod) else {
+                fatalError("The result of calculation is nil ")
+            }
+            displayValue = result
+        }
+        
+
+        
     }
 
     
     @IBAction func numButtonPressed(_ sender: UIButton) {
-        
-        //What should happen when a number is entered into the keypad
+ 
+        if let num =  sender.currentTitle {
+            if isFinshedTypingNumber {
+                displayLabel.text = num
+                isFinshedTypingNumber = false
+            } else {
+                
+                if num == "." {
+                    guard let currrentDisplayValue = Double(displayLabel.text!) else {
+                        fatalError("Cannot covert the display label in Double")
+                    }
+                    let isInt  = floor(currrentDisplayValue) == currrentDisplayValue
+                    
+                    if !isInt {
+                        return
+                    }
+                }
+                
+                displayLabel.text = displayLabel.text! + num
+            }
+        }
     
     }
 
